@@ -2,6 +2,7 @@
 namespace Psmb\Newsletter\Domain\Repository;
 
 use Neos\Flow\Annotations as Flow;
+use Neos\Flow\Persistence\QueryResultInterface;
 use Neos\Flow\Persistence\Repository;
 use Psmb\Newsletter\Domain\Model\Filter;
 
@@ -12,9 +13,9 @@ class SubscriberRepository extends Repository
 {
     /**
      * @param $subscriptionId
-     * @return \Neos\Flow\Persistence\QueryResultInterface
+     * @return QueryResultInterface
      */
-    public function findBySubscriptionId($subscriptionId)
+    public function findBySubscriptionId($subscriptionId): QueryResultInterface
     {
         $query = $this->createQuery();
         return $query->matching(
@@ -24,9 +25,9 @@ class SubscriberRepository extends Repository
 
     /**
      * @param Filter $filter
-     * @return \Neos\Flow\Persistence\QueryResultInterface
+     * @return QueryResultInterface
      */
-    public function findAllByFilter($filter)
+    public function findAllByFilter(Filter $filter): QueryResultInterface
     {
         $query = $this->createQuery();
         $constraint = [];

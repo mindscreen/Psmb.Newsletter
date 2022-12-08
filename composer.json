@@ -4,12 +4,13 @@
     "name": "psmb/newsletter",
     "license": "GPL-3.0+",
     "require": {
-        "neos/neos": "^3.0 || ^4.0",
-        "psmb/registry": "*",
+        "ext-json": "*",
+        "neos/neos": "^7.0",
+        "psmb/registry": "^2.1.2",
         "neos/swiftmailer": "*",
         "flowpack/jobqueue-common": "*",
         "tijsverkoyen/css-to-inline-styles": "^2.2",
-        "soundasleep/html2text": "~0.3"
+        "soundasleep/html2text": "^1.0"
 
     },
     "autoload": {

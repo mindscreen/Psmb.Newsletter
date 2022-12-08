@@ -14,7 +14,7 @@ interface DataSourceInterface
      * @return string The identifier of the data source
      * @api
      */
-    public static function getIdentifier();
+    public static function getIdentifier(): string;
 
     /**
      * Get data

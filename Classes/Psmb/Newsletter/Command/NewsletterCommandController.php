@@ -1,12 +1,16 @@
 <?php
 namespace Psmb\Newsletter\Command;
 
+use GuzzleHttp\Psr7\ServerRequest;
+use GuzzleHttp\Psr7\Uri;
 use Neos\Flow\Annotations as Flow;
+use Neos\Flow\Mvc\ActionRequest;
 use Psmb\Newsletter\Domain\Model\Subscriber;
 use Psmb\Newsletter\Domain\Repository\SubscriberRepository;
 use Psmb\Newsletter\Service\FusionMailService;
 use Psmb\Newsletter\Service\SubscribersService;
 use Neos\Flow\Cli\CommandController;
+use Psr\Http\Message\ServerRequestFactoryInterface;
 
 /**
  * @Flow\Scope("singleton")
@@ -42,6 +46,12 @@ class NewsletterCommandController extends CommandController
      * @var SubscribersService
      */
     protected $subscribersService;
+
+    /**
+     * @Flow\Inject
+     * @var ServerRequestFactoryInterface
+     */
+    protected $requestFactory;
 
     /**
      * Import newsletter subscribers from CSV.
@@ -116,7 +126,7 @@ class NewsletterCommandController extends CommandController
      * @param bool $dryRun
      * @return void
      */
-    protected function sendLettersForSubscription($subscription, $dryRun)
+    protected function sendLettersForSubscription(array $subscription, bool $dryRun)
     {
         $subscribers = $this->subscribersService->getSubscribers($subscription);
 
@@ -134,19 +144,17 @@ class NewsletterCommandController extends CommandController
         });
     }
 
-    /**
-     * @return ActionRequest
-     */
-    protected function createRequest() {
+    /*protected function createRequest(): ActionRequest
+    {
         $_SERVER['FLOW_REWRITEURLS'] = 1;
-        $httpRequest = Request::createFromEnvironment();
+        $httpRequest = ServerRequest::fromGlobals();
         if ($this->baseUri) {
             $baseUri = new Uri($this->baseUri);
-            $httpRequest->setBaseUri($baseUri);
+            $httpRequest = $httpRequest->withUri($baseUri);
         }
-        $actionRequest = new ActionRequest($httpRequest);
+        $actionRequest = ActionRequest::fromHttpRequest($httpRequest);
         $actionRequest->setFormat('html');
         return $actionRequest;
-    }
+    }*/
 
 }

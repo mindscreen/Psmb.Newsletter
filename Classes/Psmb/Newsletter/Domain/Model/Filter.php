@@ -1,7 +1,6 @@
 <?php
 namespace Psmb\Newsletter\Domain\Model;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Neos\Flow\Annotations as Flow;
 
 /**

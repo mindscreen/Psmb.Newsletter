@@ -1,20 +1,21 @@
 <?php
 namespace Psmb\Newsletter\Fusion;
 
-use Neos\Flow\Annotations as Flow;
 use Neos\Fusion\FusionObjects\AbstractFusionObject;
 use TijsVerkoyen\CssToInlineStyles\CssToInlineStyles;
 
 /**
  * A Fusion Object that inlines styles
  */
-class CssToInlineImplementation extends AbstractFusionObject {
+class CssToInlineImplementation extends AbstractFusionObject
+{
     /**
      * `value` should contain html to be processed
      * `cssPath` should contain a path to CSS file, e.g. `cssPath = 'resource://Psmb.Newsletter/Public/styles.css'`
      * @return string
      */
-    public function evaluate() {
+    public function evaluate(): string
+    {
         $html = $this->fusionValue('value');
         $cssFile = $this->fusionValue('cssPath');
         $css = file_get_contents($cssFile);

@@ -11,6 +11,7 @@ use Neos\Flow\I18n\Service as I18nService;
 use Neos\Flow\I18n\Translator;
 use Neos\Flow\Mvc\Controller\ActionController;
 use Neos\ContentRepository\Domain\Model\NodeInterface;
+use Psr\Log\LoggerInterface;
 
 class NewsletterController extends ActionController
 {
@@ -39,8 +40,8 @@ class NewsletterController extends ActionController
     protected $subscribersService;
 
     /**
-     * @Flow\Inject
-     * @var \Neos\Flow\Log\SystemLoggerInterface
+     * @Flow\Inject(name="Neos.Flow:SystemLogger")
+     * @var LoggerInterface
      */
     protected $systemLogger;
 
@@ -53,9 +54,9 @@ class NewsletterController extends ActionController
     /**
      * @var array
      */
-    protected $viewFormatToObjectNameMap = array(
+    protected $viewFormatToObjectNameMap = [
         'json' => JsonView::class
-    );
+    ];
 
     /**
      * Get manual subscriptions for AJAX sending
@@ -63,7 +64,8 @@ class NewsletterController extends ActionController
      * @param string $nodeType
      * @return void
      */
-    public function getSubscriptionsAction($nodeType) {
+    public function getSubscriptionsAction(string $nodeType)
+    {
         $subscriptions = array_filter($this->subscriptions, function ($item) use ($nodeType) {
             if (isset($item['sendFromUiNodeType'])) {
                 return $item['sendFromUiNodeType'] == $nodeType;
@@ -86,10 +88,10 @@ class NewsletterController extends ActionController
      *
      * @param string $subscription Subscription id to send newsletter to
      * @param NodeInterface $node Node of the current newsletter item
-     * @param array $dataSourceAdditionalArguments
+     * @param array|null $dataSourceAdditionalArguments
      * @return void
      */
-    public function sendAction($subscription, NodeInterface $node, array $dataSourceAdditionalArguments = null)
+    public function sendAction(string $subscription, NodeInterface $node, array $dataSourceAdditionalArguments = null)
     {
         $subscriptions = array_filter($this->subscriptions, function ($item) use ($subscription) {
             return $item['identifier'] == $subscription;
@@ -108,10 +110,10 @@ class NewsletterController extends ActionController
      * Registers a new subscriber
      *
      * @param string $subscription Subscription id to send newsletter to
-     * @param array $dataSourceAdditionalArguments
+     * @param array|null $dataSourceAdditionalArguments
      * @return void
      */
-    public function previewAction($subscription, $dataSourceAdditionalArguments = null)
+    public function previewAction(string $subscription, array $dataSourceAdditionalArguments = null)
     {
         $subscriptions = array_filter($this->subscriptions, function ($item) use ($subscription) {
             return $item['identifier'] == $subscription;
@@ -132,7 +134,7 @@ class NewsletterController extends ActionController
      * @param string $email Test email address
      * @return void
      */
-    public function testSendAction($subscription, NodeInterface $node, $email)
+    public function testSendAction(string $subscription, NodeInterface $node, string $email)
     {
         $subscriptions = array_filter($this->subscriptions, function ($item) use ($subscription) {
             return $item['identifier'] == $subscription;
@@ -157,7 +159,7 @@ class NewsletterController extends ActionController
      * @param NodeInterface $node Node of the current newsletter item
      * @return void
      */
-    public function sendLettersForSubscription($subscription, $node)
+    public function sendLettersForSubscription(array $subscription, NodeInterface $node)
     {
         $subscribers = $this->subscribersService->getSubscribers($subscription);
 
@@ -165,7 +167,7 @@ class NewsletterController extends ActionController
             try {
                 $this->fusionMailService->generateSubscriptionLetterAndSend($subscriber, $subscription, $node);
             } catch (\Exception $e) {
-                $this->systemLogger->log($e->getMessage(), \LOG_ERR);
+                $this->systemLogger->error($e->getMessage());
             }
         });
     }

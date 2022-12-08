@@ -1,8 +1,11 @@
 <?php
 namespace Psmb\Newsletter\Service;
 
+use GuzzleHttp\Psr7\ServerRequest;
+use GuzzleHttp\Psr7\Uri;
 use Neos\Flow\Annotations as Flow;
 use Flowpack\JobQueue\Common\Annotations as Job;
+use Neos\Flow\Mvc\ActionResponse;
 use Psmb\Newsletter\Domain\Model\Subscriber;
 use Psmb\Newsletter\View\FusionView;
 use Neos\Flow\Mvc\ActionRequest;
@@ -13,17 +16,14 @@ use Neos\SwiftMailer\Message;
 use Neos\ContentRepository\Domain\Model\Node;
 use Neos\ContentRepository\Domain\Model\NodeInterface;
 use Neos\ContentRepository\Domain\Service\ContextFactoryInterface;
-use Psmb\Newsletter\Domain\Repository\SubscriberRepository;
-use Neos\Flow\Http\Request;
-use Neos\Flow\Http\Response;
-use Neos\Flow\Http\Uri;
 use Neos\Flow\Mvc\Controller\Arguments;
 
 
 /**
  * @Flow\Scope("singleton")
  */
-class FusionMailService {
+class FusionMailService
+{
     /**
      * @var ControllerContext
      */
@@ -66,15 +66,10 @@ class FusionMailService {
     protected $baseUri;
 
     /**
-     * @Flow\InjectConfiguration(path="subscriptions")
-     * @var array
-     */
-    protected $subscriptions;
-
-    /**
      * We can't do this in constructor as we need configuration to be injected
      */
-    public function initializeObject() {
+    public function initializeObject()
+    {
         $request = $this->createRequest();
         $this->controllerContext = $this->createControllerContext($request);
         $this->view->setControllerContext($this->controllerContext);
@@ -84,12 +79,13 @@ class FusionMailService {
     /**
      * @return ActionRequest
      */
-    protected function createRequest() {
+    protected function createRequest(): ActionRequest
+    {
         $_SERVER['FLOW_REWRITEURLS'] = 1;
         $baseUri = new Uri($this->baseUri);
-        $httpRequest = Request::create($baseUri);
-        $httpRequest->setBaseUri($baseUri);
-        $request = new ActionRequest($httpRequest);
+        $httpRequest = ServerRequest::fromGlobals();
+        $httpRequest = $httpRequest->withUri($baseUri);
+        $request = ActionRequest::fromHttpRequest($httpRequest);
         $request->setFormat('html');
         return $request;
     }
@@ -100,17 +96,16 @@ class FusionMailService {
      * @param ActionRequest $request
      * @return ControllerContext
      */
-    protected function createControllerContext($request)
+    protected function createControllerContext(ActionRequest $request): ControllerContext
     {
         $uriBuilder = new UriBuilder();
         $uriBuilder->setRequest($request);
-        $controllerContext = new ControllerContext(
+        return new ControllerContext(
             $request,
-            new Response(),
+            new ActionResponse(),
             new Arguments([]),
             $uriBuilder
         );
-        return $controllerContext;
     }
 
     /**
@@ -119,18 +114,18 @@ class FusionMailService {
      * @param array $letter
      * @throws \Exception
      */
-    public function sendLetter($letter)
+    public function sendLetter(array $letter)
     {
-        $subject = isset($letter['subject']) ? $letter['subject'] : null;
-        $body = isset($letter['body']) ? $letter['body'] : null;
-        $recipientAddress = isset($letter['recipientAddress']) ? $letter['recipientAddress'] : null;
-        $recipientName = isset($letter['recipientName']) ? $letter['recipientName'] : null;
-        $senderAddress = isset($letter['senderAddress']) ? $letter['senderAddress'] : null;
-        $senderName = isset($letter['senderName']) ? $letter['senderName'] : null;
-        $replyToAddress = isset($letter['replyToAddress']) ? $letter['replyToAddress'] : null;
-        $carbonCopyAddress = isset($letter['carbonCopyAddress']) ? $letter['carbonCopyAddress'] : null;
-        $blindCarbonCopyAddress = isset($letter['blindCarbonCopyAddress']) ? $letter['blindCarbonCopyAddress'] : null;
-        $format = isset($letter['format']) ? $letter['format'] : null;
+        $subject = $letter['subject'] ?? null;
+        $body = $letter['body'] ?? null;
+        $recipientAddress = $letter['recipientAddress'] ?? null;
+        $recipientName = $letter['recipientName'] ?? null;
+        $senderAddress = $letter['senderAddress'] ?? null;
+        $senderName = $letter['senderName'] ?? null;
+        $replyToAddress = $letter['replyToAddress'] ?? null;
+        $carbonCopyAddress = $letter['carbonCopyAddress'] ?? null;
+        $blindCarbonCopyAddress = $letter['blindCarbonCopyAddress'] ?? null;
+        $format = $letter['format'] ?? null;
 
         if (!$subject) {
             throw new \Exception('"subject" must be set.', 1327060321);
@@ -172,7 +167,7 @@ class FusionMailService {
      * @param string $hash
      * @return void
      */
-    public function sendActivationLetter(Subscriber $subscriber, $hash)
+    public function sendActivationLetter(Subscriber $subscriber, string $hash)
     {
         $siteNode = $this->getSiteNode();
         $arguments = ['--newsletter' => [
@@ -207,12 +202,12 @@ class FusionMailService {
      *
      * @param array|Subscriber $subscriber
      * @param array $subscription
-     * @param null|NodeInterface $node
+     * @param NodeInterface|null $node
      * @return array
      */
-    public function generateSubscriptionLetter($subscriber, $subscription, $node = NULL)
+    public function generateSubscriptionLetter($subscriber, array $subscription, NodeInterface $node = NULL): array
     {
-        $dimensions = isset($subscription['dimensions']) ? $subscription['dimensions'] : [];
+        $dimensions = $subscription['dimensions'] ?? [];
         $siteNode = $this->getSiteNode($dimensions);
         $node = $node ?: $siteNode;
         $this->view->assign('value', [
@@ -232,10 +227,10 @@ class FusionMailService {
      * @Job\Defer(queueName="psmb-newsletter")
      * @param array|Subscriber $subscriber
      * @param array $subscription
-     * @param null|NodeInterface $node
+     * @param NodeInterface|null $node
      * @return void
      */
-    public function generateSubscriptionLetterAndSend($subscriber, $subscription, $node = NULL)
+    public function generateSubscriptionLetterAndSend($subscriber, array $subscription, NodeInterface $node = NULL)
     {
         $letter = $this->generateSubscriptionLetter($subscriber, $subscription, $node);
         if ($letter) {
@@ -247,7 +242,7 @@ class FusionMailService {
      * @param array $dimensions
      * @return Node
      */
-    protected function getSiteNode($dimensions = [])
+    protected function getSiteNode(array $dimensions = []): Node
     {
         $contextProperties = array(
             'workspaceName' => 'live',

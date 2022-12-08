@@ -7,11 +7,11 @@ namespace Psmb\Newsletter\Controller;
 
 use League\Csv\Reader;
 use League\Csv\Writer;
+use Neos\Error\Messages\Message;
 use Psmb\Newsletter\Domain\Model\Filter;
 use Psmb\Newsletter\Domain\Model\Subscriber;
 use Psmb\Newsletter\Domain\Repository\SubscriberRepository;
 use Neos\Flow\Annotations as Flow;
-use Neos\Flow\Error\Message;
 use Neos\Flow\I18n\Translator;
 use Neos\Flow\Persistence\Exception\IllegalObjectTypeException;
 use Neos\Flow\Persistence\QueryInterface;
@@ -41,10 +41,10 @@ class BackendController extends AbstractModuleController
     protected $translator;
 
     /**
-     * @param Filter $filter
+     * @param Filter|null $filter
      * @return void
      */
-    public function indexAction($filter = NULL)
+    public function indexAction(Filter $filter = NULL)
     {
         $this->subscriberRepository->setDefaultOrderings(['name' => QueryInterface::ORDER_ASCENDING]);
         $subscriptions = $filter ? $this->subscriberRepository->findAllByFilter($filter) : $this->subscriberRepository->findAll();
@@ -60,7 +60,7 @@ class BackendController extends AbstractModuleController
      * @param Subscriber $subscriber
      * @return void
      */
-    public function editSubscriberAction($subscriber)
+    public function editSubscriberAction(Subscriber $subscriber)
     {
         $this->view->assign('subscriber', $subscriber);
         $this->view->assign('subscriptions', array_map(function ($subscription) {
@@ -72,12 +72,12 @@ class BackendController extends AbstractModuleController
      * @param Subscriber $subscriber
      * @return void
      */
-    public function updateSubscriberAction($subscriber)
+    public function updateSubscriberAction(Subscriber $subscriber)
     {
         try {
             $this->subscriberRepository->update($subscriber);
             $this->addFlashMessage(
-                $this->translator->translateById('flash.subscriber.updated', ["s" => $subscriber->getName()], null, null, 'Main', 'Psmb.Newsletter'),
+                $this->translator->translateById('flash.subscriber.updated', ['s' => $subscriber->getName()], null, null, 'Main', 'Psmb.Newsletter'),
                 'Update Subscriber'
             );
         } catch (IllegalObjectTypeException $e) {
@@ -96,7 +96,7 @@ class BackendController extends AbstractModuleController
         try {
             $this->subscriberRepository->remove($subscriber);
             $this->addFlashMessage(
-                $this->translator->translateById('flash.subscriber.removed', ["s" => $subscriber->getName()], null, null, 'Main', 'Psmb.Newsletter'),
+                $this->translator->translateById('flash.subscriber.removed', ['s' => $subscriber->getName()], null, null, 'Main', 'Psmb.Newsletter'),
                 'Remove Subscriber'
             );
         } catch (IllegalObjectTypeException $e) {
@@ -145,7 +145,8 @@ class BackendController extends AbstractModuleController
         $status[self::STATUS_CREATED] = 0;
         $status[self::STATUS_UPDATED] = 0;
         $status[self::STATUS_CORRUPTED] = 0;
-        foreach ($line = $csv->getRecords() as $line) {
+
+        foreach ($csv->getRecords() as $line) {
             if (count($line) === 3) {
                 $email = $line[0];
                 $name = $line[1] ?: "";

@@ -1,8 +1,6 @@
 <?php
 namespace Psmb\Newsletter\Service\DataSource;
 
-use Neos\Flow\Annotations as Flow;
-
 class JsonDataSource extends AbstractDataSource
 {
     /**

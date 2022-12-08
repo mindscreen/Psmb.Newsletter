@@ -9,7 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @Flow\Entity
  */
-class Subscriber {
+class Subscriber
+{
 
     /**
      * @var string
@@ -22,26 +23,26 @@ class Subscriber {
     protected $email;
 
     /**
-	 * @var string
-	 * @Flow\Validate(type="Text")
-	 * @Flow\Validate(type="StringLength", options={"minimum"=1, "maximum"=80})
-	 * @ORM\Column(length=80)
-	 */
-	protected $name;
-
-	/**
-	 * @var array
-     * @Flow\Validate(type="NotEmpty")
-	 */
-	protected $subscriptions;
-
-	/**
-	 * @var array
-	 */
-	protected $metadata;
+     * @var string
+     * @Flow\Validate(type="Text")
+     * @Flow\Validate(type="StringLength", options={"minimum"=1, "maximum"=80})
+     * @ORM\Column(length=80)
+     */
+    protected $name;
 
     /**
-     * @return array
+     * @var array
+     * @Flow\Validate(type="NotEmpty")
+     */
+    protected $subscriptions;
+
+    /**
+     * @var array
+     */
+    protected $metadata;
+
+    /**
+     * @return array|null
      */
     public function getMetadata()
     {
@@ -51,61 +52,68 @@ class Subscriber {
     /**
      * @param array $metadata
      */
-    public function setMetadata($metadata)
+    public function setMetadata(array $metadata)
     {
         $this->metadata = $metadata;
     }
 
-	/**
-	 * @return string
-	 */
-	public function getPersistenceObjectIdentifier() {
-		return $this->Persistence_Object_Identifier;
-	}
+    /**
+     * @return string
+     */
+    public function getPersistenceObjectIdentifier(): string
+    {
+        return $this->Persistence_Object_Identifier;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getName() {
-		return $this->name;
-	}
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
 
-	/**
-	 * @param string $name
-	 * @return void
-	 */
-	public function setName($name) {
-		$this->name = $name;
-	}
+    /**
+     * @param string $name
+     * @return void
+     */
+    public function setName(string $name)
+    {
+        $this->name = $name;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getEmail() {
-		return $this->email;
-	}
+    /**
+     * @return string
+     */
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
 
-	/**
-	 * @param string $email
-	 * @return void
-	 */
-	public function setEmail($email) {
-		$this->email = $email;
-	}
+    /**
+     * @param string $email
+     * @return void
+     */
+    public function setEmail(string $email)
+    {
+        $this->email = $email;
+    }
 
-	/**
-	 * @return array
-	 */
-	public function getSubscriptions() {
-		return $this->subscriptions;
-	}
+    /**
+     * @return array
+     */
+    public function getSubscriptions(): array
+    {
+        return $this->subscriptions;
+    }
 
-	/**
-	 * @param array $subscriptions
-	 * @return void
-	 */
-	public function setSubscriptions($subscriptions) {
-		$this->subscriptions = $subscriptions;
-	}
+    /**
+     * @param array $subscriptions
+     * @return void
+     */
+    public function setSubscriptions(array $subscriptions)
+    {
+        $this->subscriptions = $subscriptions;
+    }
 
 }

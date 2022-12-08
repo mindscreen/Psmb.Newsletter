@@ -24,6 +24,10 @@ class RepositoryDataSource extends AbstractDataSource
      */
     public function getData(array $subscription)
     {
+        if (!isset($subscription['identifier'])) {
+            throw new \Exception('identifier must be set for the Repository datasource' . print_r($subscription, 1));
+        }
+
         return $this->subscriberRepository->findBySubscriptionId($subscription['identifier'])->toArray();
     }
 }

@@ -22,7 +22,7 @@ abstract class AbstractDataSource implements DataSourceInterface
      * @api
      * @throws \Exception
      */
-    public static function getIdentifier()
+    public static function getIdentifier(): string
     {
         if (!is_string(static::$identifier)) {
             throw new \Exception('Identifier in class ' . __CLASS__ . ' is empty.', 1414091236);

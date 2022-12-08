@@ -2,16 +2,17 @@
 
 namespace Psmb\Newsletter\Controller;
 
-use Psmb\Newsletter\Domain\Model\Subscriber;
-use Psmb\Newsletter\Domain\Repository\SubscriberRepository;
-use Psmb\Newsletter\Service\FusionMailService;
+use Neos\Cache\Frontend\VariableFrontend;
 use Neos\Error\Messages\Message;
+use Neos\Flow\Annotations as Flow;
 use Neos\Flow\I18n\Service as I18nService;
 use Neos\Flow\I18n\Translator;
 use Neos\Flow\Mvc\Controller\ActionController;
-use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Utility\Algorithms;
 use Neos\Flow\Validation\Validator\EmailAddressValidator;
+use Psmb\Newsletter\Domain\Model\Subscriber;
+use Psmb\Newsletter\Domain\Repository\SubscriberRepository;
+use Psmb\Newsletter\Service\FusionMailService;
 
 class SubscriptionController extends ActionController
 {
@@ -34,7 +35,7 @@ class SubscriptionController extends ActionController
 
     /**
      * @Flow\Inject
-     * @var \Neos\Cache\Frontend\VariableFrontend
+     * @var VariableFrontend
      */
     protected $tokenCache;
 
@@ -66,7 +67,7 @@ class SubscriptionController extends ActionController
     /**
      * Registers a new subscriber
      *
-     * @param Subscriber $subscriber
+     * @param Subscriber|null $subscriber
      * @return void
      */
     public function registerAction(Subscriber $subscriber = null)
@@ -115,7 +116,7 @@ class SubscriptionController extends ActionController
      *
      * @param string $hash
      */
-    public function confirmAction($hash)
+    public function confirmAction(string $hash)
     {
         /** @var Subscriber $subscriber */
         $subscriber = $this->tokenCache->get($hash);

@@ -23,10 +23,10 @@ class SubscribersService {
      * @param array $subscription
      * @return array Subscribers data
      */
-    public function getSubscribers($subscription)
+    public function getSubscribers(array $subscription): array
     {
         $dataSources = static::getDataSources($this->objectManager);
-        // throw new \Exception(print_r($dataSources, 1));
+
         $dataSourceIdentifier = $subscription['dataSourceIdentifier'] ?? 'Repository';
 
         if (!isset($dataSources[$dataSourceIdentifier])) {
@@ -43,16 +43,15 @@ class SubscribersService {
      * Get available data source implementations
      *
      * @param ObjectManagerInterface $objectManager
-     * @return array Data source class names indexed by identifier
+     * @return string[] Data source class names indexed by identifier
      * @Flow\CompileStatic
      */
-    public static function getDataSources($objectManager)
+    public static function getDataSources(ObjectManagerInterface $objectManager): array
     {
         $reflectionService = $objectManager->get(ReflectionService::class);
 
         $dataSources = array();
         $dataSourceClassNames = $reflectionService->getAllImplementationClassNamesForInterface(DataSourceInterface::class);
-        /** @var $dataSourceClassName DataSourceInterface */
         foreach ($dataSourceClassNames as $dataSourceClassName) {
             $identifier = $dataSourceClassName::getIdentifier();
             if (isset($dataSources[$identifier])) {
