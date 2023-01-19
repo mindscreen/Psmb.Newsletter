@@ -76,18 +76,18 @@ class SubscriptionController extends ActionController
             $email = $subscriber->getEmail();
             if (!$email) {
                 $message = $this->translator->translateById('flash.noEmail', [], null, null, 'Main', 'Psmb.Newsletter');
-                $this->addFlashMessage($message, null, Message::SEVERITY_WARNING);
+                $this->addFlashMessage($message, '', Message::SEVERITY_WARNING);
                 $this->redirect('index');
             } else {
                 $emailValidator = new EmailAddressValidator();
                 $validationResult = $emailValidator->validate($email);
                 if ($validationResult->hasErrors()) {
                     $message = $validationResult->getFirstError()->getMessage();
-                    $this->addFlashMessage($message, null, Message::SEVERITY_WARNING);
+                    $this->addFlashMessage($message, '', Message::SEVERITY_WARNING);
                     $this->redirect('index');
                 } elseif ($this->subscriberRepository->countByEmail($email) > 0) {
                     $message = $this->translator->translateById('flash.alreadyRegistered', [], null, null, 'Main', 'Psmb.Newsletter');
-                    $this->addFlashMessage($message, null, Message::SEVERITY_WARNING);
+                    $this->addFlashMessage($message, '', Message::SEVERITY_WARNING);
                     $this->redirect('index');
                 } else {
                     $subscriber->setMetadata([
@@ -106,7 +106,7 @@ class SubscriptionController extends ActionController
                 }
             }
         } else {
-            $this->addFlashMessage('No subscriber provided', null, Message::SEVERITY_WARNING);
+            $this->addFlashMessage('No subscriber provided', '', Message::SEVERITY_WARNING);
             $this->redirect('feedback');
         }
     }
@@ -131,7 +131,7 @@ class SubscriptionController extends ActionController
             $this->addFlashMessage($message);
         } else {
             $message = $this->translator->translateById('flash.noToken', [], null, null, 'Main', 'Psmb.Newsletter');
-            $this->addFlashMessage($message, null, Message::SEVERITY_WARNING);
+            $this->addFlashMessage($message, '', Message::SEVERITY_WARNING);
         }
         $this->redirect('feedback');
     }
