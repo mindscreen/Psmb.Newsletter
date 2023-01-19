@@ -194,7 +194,8 @@ class FusionMailService
             'node' => $siteNode,
             'subscriber' => $subscriber,
             'globalSettings' => $this->globalSettings,
-            'activationLink' => $activationLink
+            'activationLink' => $activationLink,
+            'hash' => $hash,
         ]);
         $letter = $this->view->render();
         $this->sendLetter($letter);
