@@ -5,7 +5,9 @@ use GuzzleHttp\Psr7\ServerRequest;
 use GuzzleHttp\Psr7\Uri;
 use Neos\Flow\Annotations as Flow;
 use Flowpack\JobQueue\Common\Annotations as Job;
+use Neos\Flow\Http\ServerRequestAttributes;
 use Neos\Flow\Mvc\ActionResponse;
+use Neos\Flow\Mvc\Routing\Dto\RouteParameters;
 use Psmb\Newsletter\Domain\Model\Subscriber;
 use Psmb\Newsletter\View\FusionView;
 use Neos\Flow\Mvc\ActionRequest;
@@ -82,9 +84,10 @@ class FusionMailService
     protected function createRequest(): ActionRequest
     {
         $_SERVER['FLOW_REWRITEURLS'] = 1;
-        $baseUri = new Uri($this->baseUri);
-        $httpRequest = ServerRequest::fromGlobals();
-        $httpRequest = $httpRequest->withUri($baseUri);
+        $httpRequest = new ServerRequest('GET', '');
+        $routeParameters = RouteParameters::createEmpty()
+            ->withParameter('requestUriHost', $httpRequest->getUri()->getHost());
+        $httpRequest = $httpRequest->withAttribute(ServerRequestAttributes::ROUTING_PARAMETERS, $routeParameters);
         $request = ActionRequest::fromHttpRequest($httpRequest);
         $request->setFormat('html');
         return $request;
