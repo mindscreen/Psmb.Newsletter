@@ -5,13 +5,12 @@
     "license": "GPL-3.0+",
     "require": {
         "ext-json": "*",
-        "neos/neos": "^7.0",
-        "psmb/registry": "^2.1.2",
+        "neos/neos": "^8.0",
+        "psmb/registry": "^2.1.3",
         "neos/swiftmailer": "*",
         "flowpack/jobqueue-common": "*",
         "tijsverkoyen/css-to-inline-styles": "^2.2",
         "soundasleep/html2text": "^1.0"
-
     },
     "autoload": {
         "psr-0": {
