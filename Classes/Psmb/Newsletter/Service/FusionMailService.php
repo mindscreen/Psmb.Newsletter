@@ -70,7 +70,7 @@ class FusionMailService
     /**
      * We can't do this in constructor as we need configuration to be injected
      */
-    public function initializeObject()
+    public function initializeObject(): void
     {
         $request = $this->createRequest();
         $this->controllerContext = $this->createControllerContext($request);
@@ -117,7 +117,7 @@ class FusionMailService
      * @param array $letter
      * @throws \Exception
      */
-    public function sendLetter(array $letter)
+    public function sendLetter(array $letter): void
     {
         $subject = $letter['subject'] ?? null;
         $body = $letter['body'] ?? null;
@@ -170,7 +170,7 @@ class FusionMailService
      * @param string $hash
      * @return void
      */
-    public function sendActivationLetter(Subscriber $subscriber, string $hash)
+    public function sendActivationLetter(Subscriber $subscriber, string $hash): void
     {
         $siteNode = $this->getSiteNode();
         $arguments = ['--newsletter' => [
@@ -209,7 +209,7 @@ class FusionMailService
      * @param NodeInterface|null $node
      * @return array
      */
-    public function generateSubscriptionLetter($subscriber, array $subscription, NodeInterface $node = NULL): array
+    public function generateSubscriptionLetter($subscriber, array $subscription, ?NodeInterface $node = NULL): array
     {
         $dimensions = $subscription['dimensions'] ?? [];
         $siteNode = $this->getSiteNode($dimensions);
@@ -234,7 +234,7 @@ class FusionMailService
      * @param NodeInterface|null $node
      * @return void
      */
-    public function generateSubscriptionLetterAndSend($subscriber, array $subscription, NodeInterface $node = NULL)
+    public function generateSubscriptionLetterAndSend(array|Subscriber $subscriber, array $subscription, ?NodeInterface $node = NULL): void
     {
         $letter = $this->generateSubscriptionLetter($subscriber, $subscription, $node);
         if ($letter) {

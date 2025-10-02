@@ -20,7 +20,7 @@ use Neos\Neos\Controller\Module\AbstractModuleController;
 
 class BackendController extends AbstractModuleController
 {
-    const STATUS_CREATED = 0, STATUS_UPDATED = 1, STATUS_CORRUPTED = 2;
+    protected const STATUS_CREATED = 0, STATUS_UPDATED = 1, STATUS_CORRUPTED = 2;
 
     /**
      * @Flow\Inject
@@ -40,39 +40,23 @@ class BackendController extends AbstractModuleController
      */
     protected $translator;
 
-    /**
-     * @param Filter|null $filter
-     * @return void
-     */
-    public function indexAction(Filter $filter = NULL)
+    public function indexAction(?Filter $filter = null): void
     {
         $this->subscriberRepository->setDefaultOrderings(['name' => QueryInterface::ORDER_ASCENDING]);
         $subscriptions = $filter ? $this->subscriberRepository->findAllByFilter($filter) : $this->subscriberRepository->findAll();
 
         $this->view->assign('subscribers', $subscriptions);
         $this->view->assign('filter', $filter);
-        $this->view->assign('subscriptions', array_map(function ($subscription) {
-            return $subscription['identifier'];
-        }, $this->subscriptions));
+        $this->view->assign('subscriptions', array_map(static fn($subscription) => $subscription['identifier'], $this->subscriptions));
     }
 
-    /**
-     * @param Subscriber $subscriber
-     * @return void
-     */
-    public function editSubscriberAction(Subscriber $subscriber)
+    public function editSubscriberAction(Subscriber $subscriber): void
     {
         $this->view->assign('subscriber', $subscriber);
-        $this->view->assign('subscriptions', array_map(function ($subscription) {
-            return $subscription['identifier'];
-        }, $this->subscriptions));
+        $this->view->assign('subscriptions', array_map(static fn($subscription) => $subscription['identifier'], $this->subscriptions));
     }
 
-    /**
-     * @param Subscriber $subscriber
-     * @return void
-     */
-    public function updateSubscriberAction(Subscriber $subscriber)
+    public function updateSubscriberAction(Subscriber $subscriber): void
     {
         try {
             $this->subscriberRepository->update($subscriber);
@@ -87,11 +71,7 @@ class BackendController extends AbstractModuleController
         $this->redirect('editSubscriber', NULL, NULL, ['subscriber' => $subscriber]);
     }
 
-    /**
-     * @param Subscriber $subscriber
-     * @return void
-     */
-    public function deleteSubscriberAction($subscriber)
+    public function deleteSubscriberAction(Subscriber $subscriber): void
     {
         try {
             $this->subscriberRepository->remove($subscriber);
@@ -106,21 +86,16 @@ class BackendController extends AbstractModuleController
         $this->redirect('index');
     }
 
-    /**
-     * @return void
-     */
-    public function newSubscriberAction()
+    public function newSubscriberAction(): void
     {
-        $this->view->assign('subscriptions', array_map(function ($subscription) {
-            return $subscription['identifier'];
-        }, $this->subscriptions));
+        $this->view->assign('subscriptions', array_map(static fn($subscription) => $subscription['identifier'], $this->subscriptions));
     }
 
     /**
      * @param Document $file
      * @return void
      */
-    public function importSubscribersAction($file)
+    public function importSubscribersAction($file): void
     {
         if ($file->getMediaType() != 'text/csv') {
             $this->addFlashMessage(
@@ -179,10 +154,7 @@ class BackendController extends AbstractModuleController
         $this->redirect('index');
     }
 
-    /**
-     * @return void
-     */
-    public function exportSubscribersAction()
+    public function exportSubscribersAction(): void
     {
         $csv = Writer::createFromFileObject(new \SplTempFileObject());
 
@@ -199,11 +171,7 @@ class BackendController extends AbstractModuleController
         die();
     }
 
-    /**
-     * @param Subscriber $subscriber
-     * @return void
-     */
-    public function createSubscriberAction($subscriber)
+    public function createSubscriberAction(Subscriber $subscriber): void
     {
         if ($this->subscriberRepository->countByEmail($subscriber->getEmail()) > 0) {
             $message = $this->translator->translateById('flash.alreadyRegistered', [], null, null, 'Main', 'Psmb.Newsletter');

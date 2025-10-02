@@ -8,14 +8,12 @@ use Psmb\Newsletter\Domain\Model\Filter;
 
 /**
  * @Flow\Scope("singleton")
+ * @method int countByEmail(string $email)
+ * @method QueryResultInterface findByEmail(string $email)
  */
 class SubscriberRepository extends Repository
 {
-    /**
-     * @param $subscriptionId
-     * @return QueryResultInterface
-     */
-    public function findBySubscriptionId($subscriptionId): QueryResultInterface
+    public function findBySubscriptionId(string $subscriptionId): QueryResultInterface
     {
         $query = $this->createQuery();
         return $query->matching(
@@ -23,10 +21,6 @@ class SubscriberRepository extends Repository
         )->execute();
     }
 
-    /**
-     * @param Filter $filter
-     * @return QueryResultInterface
-     */
     public function findAllByFilter(Filter $filter): QueryResultInterface
     {
         $query = $this->createQuery();

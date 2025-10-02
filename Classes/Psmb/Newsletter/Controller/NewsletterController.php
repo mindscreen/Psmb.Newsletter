@@ -64,7 +64,7 @@ class NewsletterController extends ActionController
      * @param string $nodeType
      * @return void
      */
-    public function getSubscriptionsAction(string $nodeType)
+    public function getSubscriptionsAction(string $nodeType): void
     {
         $subscriptions = array_filter($this->subscriptions, function ($item) use ($nodeType) {
             if (isset($item['sendFromUiNodeType'])) {
@@ -91,7 +91,7 @@ class NewsletterController extends ActionController
      * @param array|null $dataSourceAdditionalArguments
      * @return void
      */
-    public function sendAction(string $subscription, NodeInterface $node, array $dataSourceAdditionalArguments = null)
+    public function sendAction(string $subscription, NodeInterface $node, ?array $dataSourceAdditionalArguments = null): void
     {
         $subscriptions = array_filter($this->subscriptions, function ($item) use ($subscription) {
             return $item['identifier'] == $subscription;
@@ -113,7 +113,7 @@ class NewsletterController extends ActionController
      * @param array|null $dataSourceAdditionalArguments
      * @return void
      */
-    public function previewAction(string $subscription, array $dataSourceAdditionalArguments = null)
+    public function previewAction(string $subscription, ?array $dataSourceAdditionalArguments = null): void
     {
         $subscriptions = array_filter($this->subscriptions, function ($item) use ($subscription) {
             return $item['identifier'] == $subscription;
@@ -134,7 +134,7 @@ class NewsletterController extends ActionController
      * @param string $email Test email address
      * @return void
      */
-    public function testSendAction(string $subscription, NodeInterface $node, string $email)
+    public function testSendAction(string $subscription, NodeInterface $node, string $email): void
     {
         $subscriptions = array_filter($this->subscriptions, function ($item) use ($subscription) {
             return $item['identifier'] == $subscription;
@@ -159,7 +159,7 @@ class NewsletterController extends ActionController
      * @param NodeInterface $node Node of the current newsletter item
      * @return void
      */
-    public function sendLettersForSubscription(array $subscription, NodeInterface $node)
+    public function sendLettersForSubscription(array $subscription, NodeInterface $node): void
     {
         $subscribers = $this->subscribersService->getSubscribers($subscription);
 

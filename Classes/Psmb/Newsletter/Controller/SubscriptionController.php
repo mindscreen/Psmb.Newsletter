@@ -56,7 +56,7 @@ class SubscriptionController extends ActionController
      *
      * @return void
      */
-    public function indexAction()
+    public function indexAction(): void
     {
         $additionalData = $this->request->getInternalArgument('__additionalData');
         $this->view->assign('additionalData', $additionalData);
@@ -70,7 +70,7 @@ class SubscriptionController extends ActionController
      * @param Subscriber|null $subscriber
      * @return void
      */
-    public function registerAction(Subscriber $subscriber = null)
+    public function registerAction(?Subscriber $subscriber = null): void
     {
         if ($subscriber) {
             $email = $subscriber->getEmail();
@@ -116,7 +116,7 @@ class SubscriptionController extends ActionController
      *
      * @param string $hash
      */
-    public function confirmAction(string $hash)
+    public function confirmAction(string $hash): void
     {
         /** @var Subscriber $subscriber */
         $subscriber = $this->tokenCache->get($hash);
@@ -143,7 +143,7 @@ class SubscriptionController extends ActionController
      * @throws \Exception
      * @return void
      */
-    public function editAction(Subscriber $subscriber)
+    public function editAction(Subscriber $subscriber): void
     {
         $this->view->assign('subscriber', $subscriber);
         $this->view->assign('subscriptions', $this->subscriptions);
@@ -157,7 +157,7 @@ class SubscriptionController extends ActionController
      * @throws \Exception
      * @return void
      */
-    public function updateAction(Subscriber $subscriber)
+    public function updateAction(Subscriber $subscriber): void
     {
         $this->subscriberRepository->update($subscriber);
         $message = $this->translator->translateById('flash.updated', [], null, null, 'Main', 'Psmb.Newsletter');
@@ -170,7 +170,7 @@ class SubscriptionController extends ActionController
      *
      * @param Subscriber $subscriber
      */
-    public function unsubscribeAction(Subscriber $subscriber)
+    public function unsubscribeAction(Subscriber $subscriber): void
     {
         $this->subscriberRepository->remove($subscriber);
         $this->persistenceManager->persistAll();
@@ -182,7 +182,7 @@ class SubscriptionController extends ActionController
     /**
      * Just render flash messages
      */
-    public function feedbackAction()
+    public function feedbackAction(): void
     {
     }
 
