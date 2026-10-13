@@ -59,7 +59,7 @@ Define as many subscription types under Psmb.Newsletter.subscriptions as you nee
 |`senderName`, `senderAddress`| Override options from `globalSettings`.|
 |`dimensions`| Array of dimensions in form of "dimensionName: ['dimensionValues']". Falls back to default dimension values.|
 
-Also you may need to configure SwiftMailer, [see its docs](http://swiftmailer-for-flow.readthedocs.io/en/latest/#configuration) how to do that.
+Also you may need to configure SymfonyMailer, [see its docs](https://github.com/neos/symfonymailer) how to do that.
 
 ## Rendering newsletters
 
@@ -130,7 +130,7 @@ prototype(Sfi.Site:DigestArticle) < prototype(Neos.Fusion:Tag) {
 
 |Object name|Description|
 |---|---|
-|`Psmb.Newsletter:MailRenderer`|Abstract mail renderer. Returns a RawArray of `body`, `subject` and other mail options passed to swiftmailer. See above for details.|
+|`Psmb.Newsletter:MailRenderer`|Abstract mail renderer. Returns a RawArray of `body`, `subject` and other mail options passed to symfonymailer. See above for details.|
 |`Psmb.Newsletter:EditSubscriptionLink`|Generated a link to edit action of the plugin|
 |`Psmb.Newsletter:UnsubscribeLink`|Generated a link to unsubscribe action of the plugin|
 |`Psmb.Newsletter:CssToInline`|Processor to automatically inline CSS styles|

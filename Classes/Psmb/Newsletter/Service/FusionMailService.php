@@ -1,24 +1,26 @@
 <?php
 namespace Psmb\Newsletter\Service;
 
-use GuzzleHttp\Psr7\ServerRequest;
-use GuzzleHttp\Psr7\Uri;
-use Neos\Flow\Annotations as Flow;
 use Flowpack\JobQueue\Common\Annotations as Job;
-use Neos\Flow\Http\ServerRequestAttributes;
-use Neos\Flow\Mvc\ActionResponse;
-use Neos\Flow\Mvc\Routing\Dto\RouteParameters;
-use Psmb\Newsletter\Domain\Model\Subscriber;
-use Psmb\Newsletter\View\FusionView;
-use Neos\Flow\Mvc\ActionRequest;
-use Neos\Flow\Mvc\Controller\ControllerContext;
-use Neos\Flow\Mvc\Routing\UriBuilder;
-use Neos\Neos\Service\LinkingService;
-use Neos\SwiftMailer\Message;
+use GuzzleHttp\Psr7\ServerRequest;
 use Neos\ContentRepository\Domain\Model\Node;
 use Neos\ContentRepository\Domain\Model\NodeInterface;
 use Neos\ContentRepository\Domain\Service\ContextFactoryInterface;
+use Neos\Flow\Annotations as Flow;
+use Neos\Flow\Http\ServerRequestAttributes;
+use Neos\Flow\Mvc\ActionRequest;
+use Neos\Flow\Mvc\ActionResponse;
 use Neos\Flow\Mvc\Controller\Arguments;
+use Neos\Flow\Mvc\Controller\ControllerContext;
+use Neos\Flow\Mvc\Routing\Dto\RouteParameters;
+use Neos\Flow\Mvc\Routing\UriBuilder;
+use Neos\Flow\ObjectManagement\ObjectManagerInterface;
+use Neos\Neos\Service\LinkingService;
+use Neos\SymfonyMailer\Service\MailerService;
+use Psmb\Newsletter\Domain\Model\Subscriber;
+use Psmb\Newsletter\View\FusionView;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
 
 
 /**
@@ -68,6 +70,12 @@ class FusionMailService
     protected $baseUri;
 
     /**
+     * @Flow\Inject
+     * @var ObjectManagerInterface
+     */
+    protected $objectManager;
+
+    /**
      * We can't do this in constructor as we need configuration to be injected
      */
     public function initializeObject(): void
@@ -112,7 +120,7 @@ class FusionMailService
     }
 
     /**
-     * Just a simple wrapper over SwiftMailer
+     * Just a simple wrapper over SymfonyMailer
      *
      * @param array $letter
      * @throws \Exception
@@ -140,26 +148,27 @@ class FusionMailService
             throw new \Exception('"senderAddress" must be set.', 1327060211);
         }
 
-        $mail = new Message();
+        $mail = new Email();
         $mail
-            ->setFrom(array($senderAddress => $senderName))
-            ->setTo(array($recipientAddress => $recipientName))
-            ->setSubject($subject);
+            ->addFrom(new Address($senderAddress, $senderName))
+            ->addTo(new Address($recipientAddress, $recipientName))
+            ->subject($subject);
         if ($replyToAddress) {
-            $mail->setReplyTo($replyToAddress);
+            $mail->addReplyTo(new Address($replyToAddress));
         }
         if ($carbonCopyAddress) {
-            $mail->setCc($carbonCopyAddress);
+            $mail->addCc(new Address($carbonCopyAddress));
         }
         if ($blindCarbonCopyAddress) {
-            $mail->setBcc($blindCarbonCopyAddress);
+            $mail->addBcc(new Address($blindCarbonCopyAddress));
         }
         if ($format === 'plaintext') {
-            $mail->setBody($body, 'text/plain');
+            $mail->text($body);
         } else {
-            $mail->setBody($body, 'text/html');
+            $mail->html($body);
         }
-        $mail->send();
+
+        $this->getMailerService()->getMailer()->send($mail);
     }
 
     /**
@@ -256,5 +265,10 @@ class FusionMailService
         );
         $context = $this->contextFactory->create($contextProperties);
         return $context->getCurrentSiteNode();
+    }
+
+    protected function getMailerService(): MailerService
+    {
+        return $this->objectManager->get(MailerService::class);
     }
 }
